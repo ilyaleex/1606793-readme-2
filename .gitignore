@@ -9,3 +9,7 @@
 .DS_Store
 coverage
 *.log
+
+*.env
+
+db
