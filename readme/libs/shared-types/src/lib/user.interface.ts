@@ -1,8 +1,10 @@
-export interface UserInterface {
-  _id?: string;
+import mongoose from "mongoose";
+
+export interface IUser {
+  _id?: mongoose.Types.ObjectId;
   email: string;
-  firstname: string;
-  lastname: string;
+  name: string;
+  avatarUrl: string;
+  subscriptions: IUser[];
   passwordHash: string;
-  avatar: string;
 }

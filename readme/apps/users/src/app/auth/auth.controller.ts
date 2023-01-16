@@ -1,58 +1,52 @@
-import {Body, Controller, Get, HttpCode, HttpStatus, Param, Post} from '@nestjs/common';
-import {CreateUserDto} from './dto/create-user.dto';
-import {AuthService} from './auth.service';
-import {ApiProperty, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {UserRdo} from './rdo/user.rdo';
-import {fillObject} from '@readme/core';
-import {LoginUserDto} from './dto/login-user.dto';
-import {LoggedUserRdo} from './rdo/logged-user.rdo';
+import { Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
+import { AuthError, fillObject, Path, Prefix, UserInfo } from '@readme/core';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('auth')
-@Controller('auth')
+import { UserLoggedRDO } from '../user/rdo/user-logged.rdo';
+import { UserCreateDTO } from '../user/dto/user-create.dto';
+import { UserRDO } from '../user/rdo/user.rdo';
+import { UserLoginDTO } from '../user/dto/user-login.dto';
+import { AuthService } from './auth.service';
+
+@ApiTags(Prefix.Auth)
+@Controller(Prefix.Auth)
 export class AuthController {
-
   constructor(
     private readonly authService: AuthService
   ) {}
 
-  @Post('register')
-  @ApiProperty({
-    description: 'User unique address',
-    example: 'user@user.ru'
-  })
+  @Post(Path.Register)
   @ApiResponse({
+    type: UserRDO,
     status: HttpStatus.CREATED,
-    description: 'A new user has been successfully created.'
+    description: UserInfo.Register
   })
-  async create(@Body() dto: CreateUserDto) {
-    const newUser = await this.authService.register(dto);
-    return fillObject(UserRdo, newUser);
+  async register(
+    @Body() dto: UserCreateDTO
+  ) {
+    const user = await this.authService.register(dto);
+
+    return fillObject(UserRDO, user);
   }
 
-  @Post('login')
+  @Post(Path.Login)
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
-    type: LoggedUserRdo,
+    type: UserLoggedRDO,
     status: HttpStatus.OK,
-    description: 'User has been successfully logged.'
+    description: UserInfo.Login
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
-    description: 'Password or login is wrong.',
+    description: AuthError.Login,
   })
-  async login(@Body() dto: LoginUserDto) {
-    const verifiedUser = await this.authService.verifyUser(dto);
-    return fillObject(LoggedUserRdo, verifiedUser);
-  }
+  async login(
+    @Body() dto: UserLoginDTO
+  ) {
+    const user = await this.authService.verifyUser(dto)
 
-  @Get(':id')
-  @ApiResponse({
-    type: UserRdo,
-    status: HttpStatus.OK,
-    description: 'User found'
-  })
-  async show(@Param('id') id: string) {
-    const existUser = await this.authService.getUser(id);
-    return fillObject(UserRdo, existUser);
+    const token = await this.authService.loginUser(user)
+
+    return fillObject(UserRDO, {...user, token})
   }
 }

@@ -1,0 +1,30 @@
+# Get users
+GET http://localhost:4444/api/users
+
+
+###
+
+# Get user by ID with authenthication (auth token received via login in auth.http)
+GET http://localhost:4444/api/users/639b51839f1f06a7ddd8d3b8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MzliNTE4MzlmMWYwNmE3ZGRkOGQzYjgiLCJlbWFpbCI6ImFkZHJlc3NAZG9tYWluLmRvbWFpbSIsImlhdCI6MTY3MTMyMDEzMywiZXhwIjoxNjcxMzIwMTkzfQ.bEdfxnv0PwG51asbH7IEQbwoCgr9aMyp5nO2SEyq5ao
+
+###
+
+# Update user by ID
+PATCH  http://localhost:4444/api/users/639b51839f1f06a7ddd8d3b8
+Content-Type: application/json
+
+{
+  "avatarUrl": "/upload/avatars/newAvatar2.jpg",
+  "password": "newPassw0rd"
+}
+
+###
+
+# Subscribe/unsubscribe to/from user by ID
+PATCH  http://localhost:4444/api/users/639b51839f1f06a7ddd8d3b8/subscribe?to=638a5bc64ca776bd324605e5
+
+###
+
+
+

@@ -1,0 +1,13 @@
+# Send new email
+POST http://localhost:3334/api/mail
+Content-Type: application/json
+
+{
+  "email": "user@email.com",
+  "name": "User User",
+  "postIDs": [
+    "33", "38", "49"
+  ]
+}
+
+###

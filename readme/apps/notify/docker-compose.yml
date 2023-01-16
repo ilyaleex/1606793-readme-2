@@ -1,0 +1,21 @@
+version: '3.5'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_VHOST: vhost
+    ports:
+      - 5672:5672
+      - 15672:15672
+      
+  fakesmtp:
+    image: gessnerfl/fake-smtp-server
+    container_name: fakesmtp
+    hostname: fakesmtp
+    ports:
+      - "5080:5080"
+      - "5081:5081"
+      - "5025:5025"
+    volumes:
+      - ./email:/output

@@ -1,14 +1,28 @@
-import {CommentInterface} from './comment.interface';
+import { ContentType } from "@prisma/client";
+import { ContentDTO, LinkDTO, PhotoDTO, QuoteDTO, TagDTO, TextDTO, VideoDTO } from "@readme/core";
+import { IComment } from "./comment.interface";
 
-export interface PostInterface {
-  _id?: string;
-  name: string;
-  link: string;
-  image: string;
-  text: string;
-  author: string;
-  announcement: string;
-  videoLink: string;
-  tags: string[];
-  comment: CommentInterface[];
+export interface IPostBase {
+  id?: number;
+  type?: ContentType;
+  content?: ContentDTO;
+  tags?: TagDTO[];
+  likes?: string[];
+  comments?: IComment[];
+  isRepost?: boolean;
+  isDraft?: boolean;
+  userID?: string;
+  origin?: IPost;
+  originID?: number;
+  authorID?: string;
+  publishAt?: Date;
+  createdAt?: Date;
+}
+
+export interface IPost extends IPostBase {
+  link?: LinkDTO
+  photo?: PhotoDTO
+  quote?: QuoteDTO
+  text?: TextDTO
+  video?: VideoDTO
 }

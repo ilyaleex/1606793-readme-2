@@ -2,30 +2,35 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import {SwaggerModule, DocumentBuilder} from '@nestjs/swagger';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { APIConfig, getAppRunningString, Path, Port, Prefix } from '@readme/core';
+
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
+  const globalPrefix = Prefix.Global;
   app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3333;
 
   const config = new DocumentBuilder()
-    .setTitle('Users service')
-    .setDescription('Users service API')
-    .setVersion('1.0')
+    .setTitle(APIConfig.UsersTitle)
+    .setDescription(APIConfig.UsersDesc)
+    .setVersion(APIConfig.Version)
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('spec', app, document)
+  SwaggerModule.setup(Path.Spec, app, document)
 
+  app.useGlobalPipes(new ValidationPipe());
+
+  const port = process.env.PORT || Port.UsersAPIDefault;
   await app.listen(port);
+
   Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
+    getAppRunningString(APIConfig.UsersTitle, port)
   );
 }
 

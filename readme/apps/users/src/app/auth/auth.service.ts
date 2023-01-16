@@ -1,55 +1,69 @@
-import {Injectable} from '@nestjs/common';
-import {CreateUserDto} from './dto/create-user.dto';
-import {UserInterface} from '@readme/shared-types';
-import {BlogUserEntity} from '../blog-user/blog-user.entity';
-import {AUTH_USER_EXISTS, AUTH_USER_NOT_FOUND, AUTH_USER_PASSWORD_WRONG} from './auth.const';
-import {LoginUserDto} from './dto/login-user.dto';
-import {BlogUserRepository} from '../blog-user/blog-user.repository';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { IUser } from '@readme/shared-types';
+import { AuthError } from '@readme/core';
+
+import { UserEntity } from '../user/user.entity';
+import { UserRepository } from '../user/user.repository';
+import { UserCreateDTO } from '../user/dto/user-create.dto';
+import { UserLoginDTO } from '../user/dto/user-login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-
   constructor(
-    private readonly blogUserRepository: BlogUserRepository
+    private readonly userRepository: UserRepository,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async register(dto: CreateUserDto) {
-    const {email, firstname, lastname, password} = dto;
+  async register(dto: UserCreateDTO) {
+    const {email, name, password} = dto;
+    const user = {
+      email,
+      name,
+      avatarUrl: '',
+      subscriptions: [],
+      passwordHash: '',
+      accessToken: ''
+    };
 
-    const blogUser: UserInterface = {
-      _id: '', email, firstname, lastname,
-      passwordHash: '', avatar: ''
-    }
-
-    const existUser = await this.blogUserRepository.findByEmail(email)
+    const existUser = await this.userRepository
+      .findByEmail(email);
 
     if (existUser) {
-      throw new Error(AUTH_USER_EXISTS)
+      throw new Error(AuthError.Email);
     }
 
-    const userEntity = new BlogUserEntity(blogUser)
-      .setPassword(password);
+    const userEntity = await new UserEntity(user)
+      .setPassword(password)
 
-    return this.blogUserRepository.create(await userEntity);
+    return this.userRepository
+      .create(userEntity);
   }
 
-  async verifyUser(dto: LoginUserDto) {
+  async verifyUser(dto: UserLoginDTO) {
     const {email, password} = dto;
-    const existUser = await this.blogUserRepository.findByEmail(email);
 
-    if (!existUser) {
-      throw new Error(AUTH_USER_NOT_FOUND);
+    const user = await this.userRepository.findByEmail(email)
+
+    if (!user) {
+      throw new UnauthorizedException(AuthError.Login);
     }
 
-    const blogUserEntity = new BlogUserEntity(existUser);
-    if (! await blogUserEntity.comparePassword(password)) {
-      throw new Error(AUTH_USER_PASSWORD_WRONG);
+    const userEntity = new UserEntity(user);
+
+    if (! await userEntity.comparePassword(password)) {
+      throw new UnauthorizedException(AuthError.Login);
     }
 
-    return blogUserEntity.toObject();
+    return userEntity.toObject();
   }
 
-  async getUser(id: string) {
-    return this.blogUserRepository.findById(id);
+  async loginUser(user: IUser) {
+    const payload = {
+      sub: user._id,
+      email: user.email,
+    };
+
+    return await this.jwtService.signAsync(payload)
   }
 }
