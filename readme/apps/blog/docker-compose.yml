@@ -16,7 +16,7 @@ services:
       retries: 5
       start_period: 10s
     volumes:
-      - ./db:/home/mikhail/readme/data
+      - ./db:/var/lib/postgresql
     networks:
       - postgres
 
@@ -24,11 +24,11 @@ services:
     container_name: pgadmin
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: "sakharov_mikhail@hotmail.com"
+      PGADMIN_DEFAULT_EMAIL: "admin@readme.local"
       PGADMIN_DEFAULT_PASSWORD: "test"
       PGADMIN_CONFIG_SERVER_MODE: "False"
     volumes:
-      - ./db:/home/mikhail/pgadmin
+      - ./db:/var/lib/postgresql
     ports:
       - "8082:80"
     restart: unless-stopped

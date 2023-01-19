@@ -44,7 +44,5 @@ export class CreateUserDto {
     description: 'User\'s avatar path',
     example: 'avatar.png'
   })
-  //@IsString()
-  //Ограничения: не больше 500 килобайт, формат jpeg или png.
   public avatarPath?: string;
 }

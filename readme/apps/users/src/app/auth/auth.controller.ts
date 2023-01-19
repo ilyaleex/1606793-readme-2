@@ -28,7 +28,7 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {diskStorage} from 'multer';
 import {Express} from 'express';
 
-interface LoggedUser { // TODO: в shared types
+interface LoggedUser {
   user: {
     _id: string;
     email: string;

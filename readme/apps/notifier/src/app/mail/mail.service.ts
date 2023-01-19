@@ -22,15 +22,12 @@ export class MailService {
     })
   }
 
-  // имплементировать рассылку по подпискам, а не всем подряд пользователям
   public async sendNewPostNotification(emails: string[]) {
     await this.mailerService.sendMail({
       to: emails,
       subject: EMAIL_ADD_POST_SUBJECT,
-      template: './add-post', // нужен шаблон с именем пользователя и ссылкой на публикацию
+      template: './add-post',
       context: {
-        // user: `${subscriber.firstName} ${subscriber.lastName}`,
-        // email: `${subscriber.email}`
       }
     })
   }
