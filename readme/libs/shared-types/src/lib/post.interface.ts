@@ -1,28 +1,46 @@
-import { ContentType } from "@prisma/client";
-import { ContentDTO, LinkDTO, PhotoDTO, QuoteDTO, TagDTO, TextDTO, VideoDTO } from "@readme/core";
-import { IComment } from "./comment.interface";
+import {Comment} from './comment.interface';
+import {Prisma} from '@prisma/client';
 
-export interface IPostBase {
-  id?: number;
-  type?: ContentType;
-  content?: ContentDTO;
-  tags?: TagDTO[];
-  likes?: string[];
-  comments?: IComment[];
-  isRepost?: boolean;
-  isDraft?: boolean;
-  userID?: string;
-  origin?: IPost;
-  originID?: number;
-  authorID?: string;
-  publishAt?: Date;
-  createdAt?: Date;
+interface Video {
+  videoTitle: string;
+  videoUrl: string;
 }
 
-export interface IPost extends IPostBase {
-  link?: LinkDTO
-  photo?: PhotoDTO
-  quote?: QuoteDTO
-  text?: TextDTO
-  video?: VideoDTO
+interface Text {
+  textTitle: string;
+  textAnnouncement: string;
+  text: string;
+}
+
+interface Quote {
+  quoteText: string;
+  quoteAuthor: string;
+}
+
+interface Photo {
+  image: string;
+}
+
+interface Link {
+  linkUrl: string;
+  linkDescription?: string;
+}
+
+export type ContentType = Video | Text | Quote | Photo | Link | Prisma.JsonValue;
+
+export interface Post {
+  id?: number;
+  type: string;
+  createdAt?: Date;
+  date?: Date;
+  isPublished?: boolean;
+  likes?: string[];
+  likesCount: number;
+  comments?: Comment[];
+  tags?: string[];
+  isRepost?: boolean;
+  authorId: string;
+  originalAuthorId?: string;
+  originalId?: number;
+  content: ContentType;
 }

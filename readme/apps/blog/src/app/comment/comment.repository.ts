@@ -1,77 +1,55 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { IComment, ICRUDRepo } from '@readme/shared-types';
-
-import { CommentEntity } from './comment.entity';
-import { CommentQuery } from './query/comment.query';
+import {Injectable} from '@nestjs/common';
+import {Comment} from '@readme/shared-types';
+import {CRUDRepository} from '@readme/core';
+import {PrismaService} from '../prisma/prisma.service';
+import {CommentEntity} from './comment.entity';
 
 @Injectable()
-export class CommentRepository implements ICRUDRepo<CommentEntity, number, IComment> {
+export class CommentRepository implements CRUDRepository<CommentEntity, number, Comment> {
   constructor(
     private readonly prisma: PrismaService
     ) {}
 
-  async findAllByPostID({postID, limit}: CommentQuery): Promise<IComment[]> {
-    const comments = this.prisma.comment.findMany({
-      where: {
-        postID
-      },
-      select: {
-        id: true,
-        text: true,
-        post: {
-          select: {id: true}
-        },
-        userID: true,
-        createdAt: true
-      },
-      take: limit
-    })
-
-    return comments
+  public async create(item: CommentEntity): Promise<Comment> {
+    const entityData = item.toObject();
+    const comment = await this.prisma.comment.create({
+      data: {
+        ...entityData
+      }
+    });
+    return comment;
   }
 
-  public async create(item: CommentEntity): Promise<IComment> {
-    const entityData = item.toObject();
-    const {postID, userID, text} = entityData;
-
-    return this.prisma.comment.create(
-      {
-        data: {
-          text,
-          userID,
-          post: {
-            connect: {
-              id: postID
-            }
-          }
-        },
-        include: {
-          post: {
-            select: {
-              id: true,
-            }
-          },
-        }
+  public async find(postId: number, page?: number, commentsCount?: number): Promise<Comment[]> {
+    const comments = await this.prisma.comment.findMany({
+      where: {
+        postId
+      },
+      take: commentsCount,
+      skip: (page - 1) * commentsCount,
+      orderBy: {
+        createdAt: 'desc'
       }
-    );
+    });
+    return comments;
+  }
+
+  public async findById(id: number): Promise<Comment | null> {
+    return await this.prisma.comment.findUnique({
+      where: {
+        id
+      }
+    });
+  }
+
+  public async update(id: number, item: CommentEntity): Promise<Comment> {
+    throw new Error(`Method is not implemented ${id} ${item}`);
   }
 
   public async destroy(id: number): Promise<void> {
     await this.prisma.comment.delete({
-      where: {id}
-    });
-  }
-
-  public async findOne(id: number): Promise<IComment | null> {
-    return await this.prisma.comment.findFirst({
-      where: {id},
-      include: {
-        post: {
-          select: {
-            id: true
-          }
-        }
+      where: {
+        id
       }
     });
   }

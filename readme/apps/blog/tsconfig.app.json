@@ -8,5 +8,5 @@
     "target": "es2015"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts", "src/app/posts/rdo/post-created/.rdo.ts", "../../libs/core/src/dto/post-update.dto.ts", "../../libs/core/src/lib/post.enum.ts", "src/app/posts/dto/post-create.dto.ts", "../../libs/core/src/lib/const/post.const.ts", "../../libs/core/src/lib/enum/comment.enum.ts", "../../libs/core/src/dto/blog/post-update.dto.ts", "../../libs/shared-types/src/lib/rdo/blog/post.rdo.ts", "../../libs/core/src/dto/blog/comment-create.dto.ts", "../../libs/shared-types/src/lib/rdo/blog/comment.rdo.ts"]
+  "include": ["**/*.ts"]
 }

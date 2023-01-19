@@ -1,25 +1,23 @@
-import { IComment, IEntity } from '@readme/shared-types';
+import {Comment} from '@readme/shared-types';
 
-export class CommentEntity implements IEntity<CommentEntity>, IComment {
-  public id?: number;
+export class CommentEntity implements Comment {
+  public id: number;
+  public createdAt: Date;
   public text: string;
-  public postID: number;
-  public userID: string;
-  public createdAt?: Date;
+  public postId: number;
+  public userId: string;
 
-  constructor(postID: number, comment: IComment) {
-     this.fillEntity(comment);
-     this.postID = postID
+  constructor(comment: Comment) {
+    this.fillEntity(comment);
   }
 
   public toObject() {
     return {...this};
   }
 
-  public fillEntity(comment: IComment) {
-    this.id = comment.id;
+  public fillEntity(comment: Comment) {
     this.text = comment.text;
-    this.userID = comment.userID;
-    this.createdAt = comment.createdAt
+    this.postId = comment.postId;
+    this.userId = comment.userId;
   }
 }

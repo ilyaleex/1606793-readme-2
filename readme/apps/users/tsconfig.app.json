@@ -8,5 +8,5 @@
     "target": "es2015"
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts", "../../libs/core/src/lib/env/schema/users.env.schema.ts", "../../libs/core/src/lib/env/validation/users.env.validation.ts", "../../libs/core/src/lib/enum/users.enum.ts", "../../libs/core/src/lib/const/user.const.ts", "../../libs/core/src/lib/config/jwt.config.ts", "../../libs/core/src/dto/users/user-create.dto.ts", "../../libs/core/src/dto/users/user-update.dto.ts", "../../libs/core/src/dto/users/user-login.dto.ts", "../../libs/shared-types/src/lib/rdo/users/user.rdo.ts", "src/app/user/rdo/user-logged.rdo.ts"]
+  "include": ["**/*.ts"]
 }

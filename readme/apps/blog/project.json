@@ -13,16 +13,7 @@
         "outputPath": "dist/apps/blog",
         "main": "apps/blog/src/main.ts",
         "tsConfig": "apps/blog/tsconfig.app.json",
-        "assets": ["apps/blog/src/assets"],
-        "transformers": [
-          {
-            "name": "@nestjs/swagger/plugin",
-            "options": {
-              "classValidatorShim": true,
-              "introspectComments": true
-          }
-        }
-      ]
+        "assets": ["apps/blog/src/assets"]
       },
       "configurations": {
         "production": {
@@ -82,6 +73,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npx prisma migrate reset --schema ./prisma/schema.prisma --force --skip-generate --skip-seed",
+        "cwd": "apps/blog"
+      }
+    },
+    "db-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx prisma generate --schema ./prisma/schema.prisma",
         "cwd": "apps/blog"
       }
     },

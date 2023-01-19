@@ -1,24 +1,39 @@
-import { Expose } from "class-transformer";
-import { ApiProperty, IntersectionType } from "@nestjs/swagger";
+import {ApiProperty} from '@nestjs/swagger';
+import {Expose} from 'class-transformer';
 
-import { CommentCreateDTO } from "../dto/comment-create.dto";
-import { IsInt, ValidateNested } from "class-validator";
-import { PostRDO } from "../../posts/rdo/post.rdo";
-import { CommentAPIProp } from "@readme/core";
-
-class CommentRDOBase {
+export class CommentRdo {
+  @ApiProperty({
+    description: 'Comment ID',
+    example: '1669401083934'
+  })
   @Expose()
-  @IsInt()
-  @ApiProperty(CommentAPIProp.CommentID)
   public id: string;
 
+  @ApiProperty({
+    description: 'The date the comment was created',
+    example: '2022-11-25T17:45:32.754Z'
+  })
   @Expose()
-  @ValidateNested()
-  @ApiProperty(CommentAPIProp.Post)
-  public post: PostRDO;
-}
+  public createdAt: string;
 
-export class CommentRDO extends IntersectionType (
-  CommentRDOBase,
-  CommentCreateDTO
-  ) {}
+  @ApiProperty({
+    description: 'Text of the comment an authorized user can leave under the post',
+    example: 'Great footage! Keep up the good work!'
+  })
+  @Expose()
+  public text: string;
+
+  @ApiProperty({
+    description: 'The id of the post the comment was left under',
+    example: '1669292869059'
+  })
+  @Expose()
+  public postId: number;
+
+  @ApiProperty({
+    description: 'The unique id of the user, who commeneted the post',
+    example: '3afa868f-e0d7-450d-bef5-101667e6b888'
+  })
+  @Expose()
+  public userId: string;
+}

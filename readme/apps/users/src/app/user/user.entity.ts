@@ -1,23 +1,25 @@
-import { UsersConfig } from '@readme/core';
-import { IUser } from '@readme/shared-types';
-import { genSalt, hash, compare } from 'bcrypt';
-import { Types } from 'mongoose';
+import {User} from '@readme/shared-types';
+import {genSalt, hash, compare} from 'bcrypt';
 
-export class UserEntity implements IUser {
-  public _id: Types.ObjectId;
-  public avatarUrl: string;
+const SALT_ROUNDS = 10;
+
+export class UserEntity implements User {
+  public _id: string;
   public email: string;
-  public name: string;
-  public subscriptions: IUser[];
+  public firstName: string;
+  public lastName: string;
   public passwordHash: string;
-  public accessToken: string;
+  public avatarPath: string;
+  public postsCount: number;
+  public subscribersCount: number;
+  public subscribersEmails: string[];
 
-  constructor(user: IUser) {
+  constructor(user: User) {
     this.fillEntity(user);
   }
 
   public async setPassword(password: string): Promise<UserEntity> {
-    const salt = await genSalt(UsersConfig.SaltRounds);
+    const salt = await genSalt(SALT_ROUNDS);
     this.passwordHash = await hash(password, salt);
     return this;
   }
@@ -30,12 +32,15 @@ export class UserEntity implements IUser {
     return {...this};
   }
 
-  public fillEntity(user: IUser) {
+  public fillEntity(user: User) {
     this._id = user._id;
-    this.name = user.name;
-    this.avatarUrl = user.avatarUrl;
     this.email = user.email;
-    this.subscriptions = user.subscriptions;
+    this.firstName = user.firstName;
+    this.lastName = user.lastName;
     this.passwordHash = user.passwordHash;
+    this.avatarPath = user.avatarPath ?? '';
+    this.postsCount = user.postsCount;
+    this.subscribersCount = user.subscribersCount;
+    this.subscribersEmails = user.subscribersEmails;
   }
 }

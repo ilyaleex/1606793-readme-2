@@ -7,5 +7,5 @@
     "types": ["node"]
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts", "../../apps/blog/src/app/posts/post-create.dto.ts", "../core/src/lib/enum/api.enum.ts", "../../apps/blog/src/app/posts/dto/post-create.dto.ts", "../../apps/users/src/app/user/rdo/user-logged.rdo.ts", "../core/src/dto/tag.dto.ts"]
+  "include": ["**/*.ts"]
 }

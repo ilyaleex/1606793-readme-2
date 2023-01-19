@@ -1,42 +1,33 @@
-import { Injectable } from "@nestjs/common";
-import { CommentError, PostError } from "@readme/core";
-
-import { CommentEntity } from "./comment.entity";
-import { PostRepository } from "../posts/post.repository";
-import { CommentRepository } from "./comment.repository";
-import { CommentCreateDTO } from "./dto/comment-create.dto";
-import { CommentQuery } from "./query/comment.query";
+import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {CommentEntity} from './comment.entity';
+import {CreateCommentDto} from './dto/create-comment.dto';
+import {CommentRepository} from './comment.repository';
 
 @Injectable()
 export class CommentService {
   constructor(
-    private readonly commentRepository: CommentRepository,
-    private readonly postRepository: PostRepository
-      ) {}
+    private readonly commentRepository: CommentRepository
+  ) {}
 
-  async getCommentsForPost(query: CommentQuery) {
-    return await this.commentRepository.findAllByPostID(query)
+  async createComment(dto: CreateCommentDto, userId: string) {
+    const commentEntity = new CommentEntity({
+      ...dto,
+      userId
+    });
+
+    return await this.commentRepository.create(commentEntity);
   }
 
-  async createComment(postID: number, dto: CommentCreateDTO) {
-    const post = await this.postRepository.findOne(postID)
-
-    if (!post) {
-      throw new Error(PostError.NotFound)
-    }
-
-    const newComment = new CommentEntity(postID, dto)
-
-    return await this.commentRepository.create(newComment);
+  async getComments(postId: number, page?: number, commentsCount?: number) {
+    return await this.commentRepository.find(postId, page, commentsCount);
   }
 
-  async deleteComment(commentID: number) {
-    const comment = await this.commentRepository.findOne(commentID);
-
-    if (!comment) {
-      throw new Error(CommentError.NotFound)
-    }
+  async deleteComment(commentId: number, userId: string) {
+    const comment = await this.commentRepository.findById(commentId);
     
-    await this.commentRepository.destroy(commentID)
+    if (userId !== comment.userId) {
+      throw new UnauthorizedException('You do not have sufficient privileges to delete this comment!');
+    }
+    await this.commentRepository.destroy(commentId);
   }
 }

@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../../../node_modules/.prisma/client"
+  output = "../../../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -11,96 +11,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ContentType {
-  LINK
-  PHOTO
-  QUOTE
-  TEXT
-  VIDEO
-}
-
 model Post {
-  id        Int         @id @default(autoincrement())
-  type      ContentType
-  tags      Tag[]
-  likes     String[]    @default([])
-  isDraft   Boolean     @default(false)
-  isRepost  Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  publishAt DateTime    @default(now())
-  userID    String
-  authorID  String?
-  originID  Int?        @unique
-  origin    Post?       @relation("RepostHistory", fields: [originID], references: [id])
-  reposts   Post[]      @relation("RepostHistory")
-  link      Link?
-  photo     Photo?
-  quote     Quote?
-  text      Text?
-  video     Video?
-  comments  Comment[]
+  id                 Int @id @default(autoincrement())
+  type               String
+  createdAt          DateTime @default(now())
+  date               DateTime
+  isPublished        Boolean
+  likes              String[]
+  likesCount         Int
+  comments           Comment[]
+  tags               String[]
+  isRepost           Boolean
+  authorId           String
+  originalAuthorId   String
+  originalId         Int
+  content            Json
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  text      String
-  userID    String
-  post      Post     @relation(fields: [postID], references: [id], onDelete: Cascade)
-  postID    Int
-}
-
-model Link {
-  post   Post        @relation(fields: [postID], references: [id], onDelete: Cascade)
-  postID Int         @id
-  type   ContentType @default(LINK) @ignore
-  url    String
-  desc   String?
-
-  @@unique([postID])
-}
-
-model Photo {
-  post   Post        @relation(fields: [postID], references: [id], onDelete: Cascade)
-  postID Int         @id
-  type   ContentType @default(PHOTO) @ignore
-  photo  String
-
-  @@unique([postID])
-}
-
-model Quote {
-  post   Post        @relation(fields: [postID], references: [id], onDelete: Cascade)
-  postID Int         @id
-  type   ContentType @default(QUOTE) @ignore
-  quote  String
-  author String
-
-  @@unique([postID])
-}
-
-model Text {
-  post   Post        @relation(fields: [postID], references: [id], onDelete: Cascade)
-  postID Int         @id
-  type   ContentType @default(TEXT) @ignore
-  title  String
-  ann    String
-  text   String
-
-  @@unique([postID])
-}
-
-model Video {
-  post     Post        @relation(fields: [postID], references: [id], onDelete: Cascade)
-  postID   Int         @id
-  type     ContentType @default(VIDEO) @ignore
-  title    String
-  videoUrl String
-
-  @@unique([postID])
-}
-
-model Tag {
-  title String @id
-  posts Post[]
+  id          Int @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  text        String
+  post        Post @relation(fields: [postId], references: [id])
+  postId      Int
+  userId      String
 }

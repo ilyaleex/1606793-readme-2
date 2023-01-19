@@ -1,0 +1,6 @@
+From: Mikhail Sakharov <sakharov_mikhail@hotmail.com>
+To: <engineeroks@mail.ru>
+Subject: Test
+Date: Tu, 27 Dec 2022 19:00
+
+This is the test email sending!

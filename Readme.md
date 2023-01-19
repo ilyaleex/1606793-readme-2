@@ -1,7 +1,7 @@
 # Личный проект «Readme»
 
 * Студент: [Илья Ли](https://up.htmlacademy.ru/nodejs-2/2/user/1606793).
-* Наставник:  [Дмитрий (sench) Железцов](https://htmlacademy.ru/profile/sench).
+* Наставник: [Дмитрий (sench) Железцов](https://htmlacademy.ru/profile/sench).
 
 ---
 

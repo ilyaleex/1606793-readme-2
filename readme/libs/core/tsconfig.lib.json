@@ -7,5 +7,5 @@
     "types": ["node"]
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["**/*.ts", "../shared-types/src/lib/crud-repo.interface.ts", "../shared-types/src/lib/entity.interface.ts", "src/dto/tag.dto.ts", "../../apps/users/src/config/mongodb.config.ts"]
+  "include": ["**/*.ts"]
 }

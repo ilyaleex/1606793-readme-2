@@ -1,6 +1,7 @@
-export interface IComment {
+export interface Comment {
   id?: number;
-  text: string;
-  userID: string;
   createdAt?: Date;
+  text: string;
+  postId: number;
+  userId: string;
 }

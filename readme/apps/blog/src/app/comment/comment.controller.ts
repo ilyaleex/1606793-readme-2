@@ -1,51 +1,70 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ParamName, fillObject, Prefix, CommentInfo } from '@readme/core';
+import {Request, RawBodyRequest, Body, Controller, DefaultValuePipe, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards} from '@nestjs/common';
+import {ApiResponse, ApiTags} from '@nestjs/swagger';
+import {fillObject, JwtAuthGuard} from '@readme/core';
+import {MAX_COMMENTS_COUNT, DEFAULT_PAGE} from './comment.constant';
+import {CommentService} from './comment.service';
+import {CreateCommentDto} from './dto/create-comment.dto';
+import {CommentRdo} from './rdo/comment.rdo';
 
-import { CommentService } from './comment.service';
-import { CommentCreateDTO } from './dto/comment-create.dto';
-import { CommentQuery } from './query/comment.query';
-import { CommentRDO } from './rdo/comment.rdo';
+interface LoggedUser { // TODO: в shared types
+  user: {
+    _id: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+  }
+}
 
-@ApiTags(Prefix.Comments)
-@Controller(Prefix.Comments)
+@ApiTags('comments')
+@Controller('comments')
 export class CommentController {
   constructor(
-    private readonly commentService: CommentService,
+    private readonly commentService: CommentService
   ) {}
 
-  @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({
-    status: HttpStatus.OK,
-    description: CommentInfo.Loaded
-  })
-  async getComments(
-    @Query() query: CommentQuery
-    ) {
-    return this.commentService.getCommentsForPost(query)
-  }
-
-  @Post()
-  @ApiResponse({
-    type: [CommentRDO],
+    type: CommentRdo,
     status: HttpStatus.CREATED,
-    description: CommentInfo.Created
+    description: 'The comment was created'
   })
+  @Post('')
+  @HttpCode(HttpStatus.CREATED)
   async create(
-    @Query() {postID}: CommentQuery,
-    @Body() dto: CommentCreateDTO
-    ) {
-    const comment = await this.commentService.createComment(postID, dto);
-
-    return fillObject(CommentRDO, comment);
+    @Body() dto: CreateCommentDto,
+    @Request() req: RawBodyRequest<LoggedUser>
+  ) {
+    const comment = await this.commentService.createComment(dto, req.user._id);
+    return fillObject(CommentRdo, comment);
   }
 
-  @Delete(`:${ParamName.CommentID}`)
   @ApiResponse({
-   status: HttpStatus.OK,
-   description: CommentInfo.Deleted
+    type: CommentRdo,
+    status: HttpStatus.OK,
+    description: `${MAX_COMMENTS_COUNT} or less comments were received`
   })
-  async delete(@Param(ParamName.CommentID) commentID: number) {
-    return this.commentService.deleteComment(commentID);
+  @Get(':postId')
+  @HttpCode(HttpStatus.OK)
+  async getComments(
+    @Query('page', new DefaultValuePipe(DEFAULT_PAGE)) page: number,
+    @Query('commentsCount', new DefaultValuePipe(MAX_COMMENTS_COUNT)) commentsCount: number,
+    @Param('postId') postId: number
+  ) {
+    const comments = await this.commentService.getComments(postId, page, commentsCount);
+    return fillObject(CommentRdo, comments);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'The comment was deleted'
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':commentId')
+  async deleteComment(
+    @Param('commentId') commentId: number,
+    @Request() req: RawBodyRequest<LoggedUser>
+  ) {
+    this.commentService.deleteComment(commentId, req.user._id);
   }
 }
